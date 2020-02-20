@@ -40,7 +40,7 @@ public class Server extends AuthorizationServerConfigurerAdapter {
                 .secret(passwordEncoder().encode("noonewilleverguess"))
                 .scopes("read")
                 .authorizedGrantTypes("authorization_code")
-                .redirectUris("http://localhost:8081/login");
+                .redirectUris("http://localhost:8081/");
     }
 
     @Override
