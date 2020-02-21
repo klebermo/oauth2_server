@@ -10,14 +10,9 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import java.util.List;
 import oauth.server.model.autorizacao.Autorizacao;
 import java.util.Collection;
-import org.springframework.security.core.GrantedAuthority;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 
 @Entity
-public class Usuario extends Model implements UserDetails, ClientDetails {
+public class Usuario extends Model implements UserDetails {
   @Id
   private Integer id;
 
@@ -28,28 +23,10 @@ public class Usuario extends Model implements UserDetails, ClientDetails {
   private String password;
 
   @OneToMany
-  private Collection<Autorizacao> autorizacoes;
-
-  @OneToMany
-  private Set<String> authorizedGrantTypes;
-
-  @Column
-  private String clientId;
-
-  @Column
-  private String clientSecret;
-
-  @OneToMany
-  private Set<String> redirectUris;
-
-  @OneToMany
-  private Set<String> resourceId;
-
-  @OneToMany
-  private Set<String> scope;
+  private List<Autorizacao> autorizacoes;
 
   public Integer getId() {
-    return null;
+    return id;
   }
 
   public void setId() {
@@ -81,54 +58,6 @@ public class Usuario extends Model implements UserDetails, ClientDetails {
   }
 
   public boolean	isEnabled() {
-    return true;
-  }
-
-  public Integer	getAccessTokenValiditySeconds() {
-    return 3600;
-  }
-
-  public Map<String,Object>	getAdditionalInformation() {
-    return new HashMap<String,Object>();
-  }
-
-  public Set<String>	getAuthorizedGrantTypes() {
-    return authorizedGrantTypes;
-  }
-
-  public String	getClientId() {
-    return clientId;
-  }
-
-  public String	getClientSecret() {
-    return clientSecret;
-  }
-
-  public Integer	getRefreshTokenValiditySeconds() {
-    return 3600;
-  }
-
-  public Set<String>	getRegisteredRedirectUri() {
-    return redirectUris;
-  }
-
-  public Set<String>	getResourceIds() {
-    return resourceId;
-  }
-
-  public Set<String>	getScope() {
-    return scope;
-  }
-
-  public boolean	isAutoApprove(String scope) {
-    return true;
-  }
-
-  public boolean	isScoped() {
-    return true;
-  }
-
-  public boolean	isSecretRequired() {
     return true;
   }
 
