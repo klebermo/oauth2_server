@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+import javax.sql.DataSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import java.security.KeyPair;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -27,6 +28,9 @@ public class Server extends AuthorizationServerConfigurerAdapter {
     @Autowired
   	private KeyPair keyPair;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -35,12 +39,7 @@ public class Server extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-            .inMemory()
-                .withClient("first-client")
-                .secret(passwordEncoder().encode("noonewilleverguess"))
-                .scopes("read")
-                .authorizedGrantTypes("authorization_code")
-                .redirectUris("http://localhost:8081/");
+          .jdbc(dataSource);
     }
 
     @Override
