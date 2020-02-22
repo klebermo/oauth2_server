@@ -1,11 +1,8 @@
-insert into autorizacao (id, name) values (1, 'read');
-insert into autorizacao (id, name) values (2, 'write');
+insert into credencial (nome) values ('basic');
+insert into autorizacao (nome) values ('read');
+insert into autorizacao (nome) values ('write');
 
-insert into usuario (id, username, password) values (1, 'kleber', '');
-insert into usuario_autorizacoes values (1,1);
-insert into usuario_autorizacoes values (1,2);
+insert into usuario (username, password, first_name, last_name, email, enabled, locked) values ('kleber', '$2a$04$q8j56WcbSTMViRYqBOfGPOVbUKqSR0tdUoa9awU/cA/TRdPA/krRW', 'Kleber', 'Mota', 'kleber@mail.com', true, false);
+insert into usuario_credenciais values (1,1);
 
-insert into cliente (id, client_id, client_secret, access_token_validity_seconds, refresh_token_validity_seconds, auto_approve, scoped, secret_required) values (1, 'first-client', 'noonewilleverguess', 3600, 3600, true, true, true);
-insert into cliente_authorized_grant_types values (1, 'authorization_code');
-insert into cliente_redirect_uris values (1, 'http://localhost:8081');
-insert into cliente_scope values (1, 'read');
+insert into oauth_client_details (client_id,client_secret,authorized_grant_types,access_token_validity,refresh_token_validity,web_server_redirect_uri,resource_ids,scope,scoped,secret_required,autoapprove) values ('first-client', '', 'authorizantion_code', 36000, 36000, 'http://localhost:8081', null, 'read', true, true, true);
