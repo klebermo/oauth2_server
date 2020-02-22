@@ -57,10 +57,6 @@ public class Cliente extends Model implements ClientDetails {
   @Column
   private boolean secretRequired;
 
-  @ElementCollection
-  @Column(name="authorities")
-  private Collection<GrantedAuthority> authorities;
-
   public Integer getId() {
     return id;
   }
@@ -114,7 +110,7 @@ public class Cliente extends Model implements ClientDetails {
   }
 
   public Collection<GrantedAuthority>	getAuthorities() {
-    return authorities;
+    return null;
   }
 
   public Map<String,Object>	getAdditionalInformation() {
