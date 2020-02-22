@@ -1,19 +1,18 @@
 package oauth.server.model.cliente;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import oauth.server.model.Model;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
-public class Cliente extends Model implements ClientDetails {
+@Table(name="oauth_client_details")
+public class Cliente extends Model {
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
   private Integer id;
@@ -24,33 +23,38 @@ public class Cliente extends Model implements ClientDetails {
   @Column
   private String clientSecret;
 
-  @ElementCollection
   @Column
-  private Set<String> authorizedGrantTypes;
+  private String authorizedGrantTypes;
+
+  @Column(length=11)
+  private Integer accessTokenValidity;
+
+  @Column(length=11)
+  private Integer refreshTokenValidity;
 
   @Column
-  private Integer accessTokenValiditySeconds;
+  private String webServerRedirectUri;
 
   @Column
-  private Integer refreshTokenValiditySeconds;
+  private String resourceIds;
 
-  @ElementCollection
   @Column
-  private Set<String> registeredRedirectUri;
+  private String authorities;
 
-  @ElementCollection
   @Column
-  private Set<String> resourceIds;
-
-  @ElementCollection
-  @Column
-  private Set<String> scope;
+  private String scope;
 
   @Column
   private boolean scoped;
 
   @Column
   private boolean secretRequired;
+
+  @Column(name="autoapprove")
+  private boolean autoApprove;
+
+  @Column(length=4096)
+	private String additionalInformation;
 
 	/**
 	* Default empty Cliente constructor
@@ -62,19 +66,22 @@ public class Cliente extends Model implements ClientDetails {
 	/**
 	* Default Cliente constructor
 	*/
-	public Cliente(Integer id, String clientId, String clientSecret, Set<String> authorizedGrantTypes, Integer accessTokenValiditySeconds, Integer refreshTokenValiditySeconds, Set<String> registeredRedirectUri, Set<String> resourceIds, Set<String> scope, boolean scoped, boolean secretRequired) {
+	public Cliente(Integer id, String clientId, String clientSecret, String authorizedGrantTypes, Integer accessTokenValidity, Integer refreshTokenValidity, String webServerRedirectUri, String resourceIds, String authorities, String scope, boolean scoped, boolean secretRequired, boolean autoApprove, String additionalInformation) {
 		super();
 		this.id = id;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.authorizedGrantTypes = authorizedGrantTypes;
-		this.accessTokenValiditySeconds = accessTokenValiditySeconds;
-		this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
-		this.registeredRedirectUri = registeredRedirectUri;
+		this.accessTokenValidity = accessTokenValidity;
+		this.refreshTokenValidity = refreshTokenValidity;
+		this.webServerRedirectUri = webServerRedirectUri;
 		this.resourceIds = resourceIds;
+		this.authorities = authorities;
 		this.scope = scope;
 		this.scoped = scoped;
 		this.secretRequired = secretRequired;
+		this.autoApprove = autoApprove;
+		this.additionalInformation = additionalInformation;
 	}
 
 	/**
@@ -129,7 +136,7 @@ public class Cliente extends Model implements ClientDetails {
 	* Returns value of authorizedGrantTypes
 	* @return
 	*/
-	public Set<String> getAuthorizedGrantTypes() {
+	public String getAuthorizedGrantTypes() {
 		return authorizedGrantTypes;
 	}
 
@@ -137,79 +144,95 @@ public class Cliente extends Model implements ClientDetails {
 	* Sets new value of authorizedGrantTypes
 	* @param
 	*/
-	public void setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
+	public void setAuthorizedGrantTypes(String authorizedGrantTypes) {
 		this.authorizedGrantTypes = authorizedGrantTypes;
 	}
 
 	/**
-	* Returns value of accessTokenValiditySeconds
+	* Returns value of accessTokenValidity
 	* @return
 	*/
-	public Integer getAccessTokenValiditySeconds() {
-		return accessTokenValiditySeconds;
+	public Integer getAccessTokenValidity() {
+		return accessTokenValidity;
 	}
 
 	/**
-	* Sets new value of accessTokenValiditySeconds
+	* Sets new value of accessTokenValidity
 	* @param
 	*/
-	public void setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds) {
-		this.accessTokenValiditySeconds = accessTokenValiditySeconds;
+	public void setAccessTokenValidity(Integer accessTokenValidity) {
+		this.accessTokenValidity = accessTokenValidity;
 	}
 
 	/**
-	* Returns value of refreshTokenValiditySeconds
+	* Returns value of refreshTokenValidity
 	* @return
 	*/
-	public Integer getRefreshTokenValiditySeconds() {
-		return refreshTokenValiditySeconds;
+	public Integer getRefreshTokenValidity() {
+		return refreshTokenValidity;
 	}
 
 	/**
-	* Sets new value of refreshTokenValiditySeconds
+	* Sets new value of refreshTokenValidity
 	* @param
 	*/
-	public void setRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds) {
-		this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
+	public void setRefreshTokenValidity(Integer refreshTokenValidity) {
+		this.refreshTokenValidity = refreshTokenValidity;
 	}
 
 	/**
-	* Returns value of redirectUris
+	* Returns value of webServerRedirectUri
 	* @return
 	*/
-	public Set<String> getRegisteredRedirectUri() {
-		return registeredRedirectUri;
+	public String getWebServerRedirectUri() {
+		return webServerRedirectUri;
 	}
 
 	/**
-	* Sets new value of redirectUris
+	* Sets new value of webServerRedirectUri
 	* @param
 	*/
-	public void setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
-		this.registeredRedirectUri = registeredRedirectUri;
+	public void setWebServerRedirectUri(String webServerRedirectUri) {
+		this.webServerRedirectUri = webServerRedirectUri;
 	}
 
 	/**
-	* Returns value of resourceId
+	* Returns value of resourceIds
 	* @return
 	*/
-	public Set<String> getResourceIds() {
+	public String getResourceIds() {
 		return resourceIds;
 	}
 
 	/**
-	* Sets new value of resourceId
+	* Sets new value of resourceIds
 	* @param
 	*/
-	public void setResourceId(Set<String> resourceIds) {
+	public void setResourceIds(String resourceIds) {
 		this.resourceIds = resourceIds;
+	}
+
+	/**
+	* Returns value of authorities
+	* @return
+	*/
+	public String getAuthorities() {
+		return authorities;
+	}
+
+	/**
+	* Sets new value of authorities
+	* @param
+	*/
+	public void setAuthorities(String authorities) {
+		this.authorities = authorities;
 	}
 
 	/**
 	* Returns value of scope
 	* @return
 	*/
-	public Set<String> getScope() {
+	public String getScope() {
 		return scope;
 	}
 
@@ -217,7 +240,7 @@ public class Cliente extends Model implements ClientDetails {
 	* Sets new value of scope
 	* @param
 	*/
-	public void setScope(Set<String> scope) {
+	public void setScope(String scope) {
 		this.scope = scope;
 	}
 
@@ -254,23 +277,43 @@ public class Cliente extends Model implements ClientDetails {
 	}
 
 	/**
+	* Returns value of autoApprove
+	* @return
+	*/
+	public boolean isAutoApprove() {
+		return autoApprove;
+	}
+
+	/**
+	* Sets new value of autoApprove
+	* @param
+	*/
+	public void setAutoApprove(boolean autoApprove) {
+		this.autoApprove = autoApprove;
+	}
+
+	/**
+	* Returns value of additionalInformation
+	* @return
+	*/
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	/**
+	* Sets new value of additionalInformation
+	* @param
+	*/
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	/**
 	* Create string representation of Cliente for printing
 	* @return
 	*/
 	@Override
 	public String toString() {
-		return clientId;
+		return "Cliente [id=" + id + ", clientId=" + clientId + ", clientSecret=" + clientSecret + ", authorizedGrantTypes=" + authorizedGrantTypes + ", accessTokenValidity=" + accessTokenValidity + ", refreshTokenValidity=" + refreshTokenValidity + ", webServerRedirectUri=" + webServerRedirectUri + ", resourceIds=" + resourceIds + ", authorities=" + authorities + ", scope=" + scope + ", scoped=" + scoped + ", secretRequired=" + secretRequired + ", autoApprove=" + autoApprove + ", additionalInformation=" + additionalInformation + "]";
 	}
-
-  public Collection<org.springframework.security.core.GrantedAuthority> 	getAuthorities() {
-    return null;
-  }
-
-  public Map<String,Object> 	getAdditionalInformation() {
-    return null;
-  }
-
-  public boolean isAutoApprove(String scope) {
-    return true;
-  }
 }
