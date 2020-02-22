@@ -1,19 +1,21 @@
 package oauth.server;
 
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.authentication.AuthenticationManager;
+import javax.sql.DataSource;
 import java.security.KeyPair;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.context.annotation.Bean;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -26,28 +28,31 @@ public class Server extends AuthorizationServerConfigurerAdapter {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-  	private KeyPair keyPair;
+    private DataSource dataSource;
 
     @Autowired
-    private ClientDetailsService clientDetailsService;
+    private KeyPair keyPair;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-          .withClientDetails(clientDetailsService);
+            .jdbc(this.dataSource)
+            .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
     }
 
     @Override
   	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
   		endpoints
-  			.authenticationManager(authenticationManager)
+  			.authenticationManager(this.authenticationManager)
   			.accessTokenConverter(accessTokenConverter())
   			.tokenStore(tokenStore());
+  	}
+
+    @Bean
+  	public KeyPair keyPairBean() throws NoSuchAlgorithmException {
+  		KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+  		gen.initialize(2048);
+  		KeyPair keyPair = gen.generateKeyPair();
+  		return keyPair;
   	}
 
     @Bean
@@ -58,7 +63,7 @@ public class Server extends AuthorizationServerConfigurerAdapter {
   	@Bean
   	public JwtAccessTokenConverter accessTokenConverter() {
   		JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-  		converter.setKeyPair(keyPair);
+  		converter.setKeyPair(this.keyPair);
   		return converter;
   	}
 }
