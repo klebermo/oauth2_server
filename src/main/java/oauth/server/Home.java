@@ -1,13 +1,15 @@
 package oauth.server;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
 
-@RestController
+@Controller
 public class Home {
-	@GetMapping("/userinfo")
-	public String whoami(@AuthenticationPrincipal(expression="name") String name) {
-		return name;
+  @RequestMapping("/")
+  public String index() {
+    return "index";
   }
 }
