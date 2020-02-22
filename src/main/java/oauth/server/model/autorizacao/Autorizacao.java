@@ -1,35 +1,46 @@
 package oauth.server.model.autorizacao;
 
+import oauth.server.model.Model;
+import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Column;
-import org.springframework.security.core.GrantedAuthority;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 @Entity
-public class Autorizacao implements GrantedAuthority {
+public class Autorizacao extends Model implements GrantedAuthority {
   @Id
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
   private Integer id;
 
   @Column
-  private String name;
+  private String nome;
 
+  @Override
   public Integer getId() {
     return id;
   }
 
-  public void setInteger(Integer id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
+  public String getNome() {
+    return nome;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setNome(String nome) {
+    this.nome = nome;
   }
 
+  @Override
+  public String toString() {
+    return nome;
+  }
+
+  @Override
   public String getAuthority() {
-    return name;
+    return nome;
   }
 }
