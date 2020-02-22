@@ -44,7 +44,7 @@ public class Security extends WebSecurityConfigurerAdapter {
           .anyRequest().authenticated()
         .and()
         .formLogin()
-          .loginPage("/login")
+          .loginPage("/")
           .loginProcessingUrl("/doLogin").permitAll()
           .usernameParameter("login")
           .passwordParameter("senha")
