@@ -10,7 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import javax.sql.DataSource;
 import java.security.KeyPair;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.context.annotation.Bean;
 import java.security.KeyPair;
@@ -36,7 +36,7 @@ public class Server extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
             .jdbc(this.dataSource)
-            .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
+            .passwordEncoder(new BCryptPasswordEncoder(4));
     }
 
     @Override
