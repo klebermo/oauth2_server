@@ -16,6 +16,8 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import java.io.Serializable;
 
 @Configuration
 @EnableWebSecurity
@@ -59,7 +61,7 @@ public class Security extends WebSecurityConfigurerAdapter {
   public void configure(WebSecurity web) throws Exception {
     DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
     handler.setPermissionEvaluator(new PermissionEvaluator() {
-      public boolean hasPermission(org.springframework.security.core.Authentication authentication, java.io.Serializable targetId, java.lang.String targetType, java.lang.Object permission) {
+      public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
         if (authentication == null || !authentication.isAuthenticated())
           return false;
         else
@@ -69,7 +71,7 @@ public class Security extends WebSecurityConfigurerAdapter {
         return false;
       }
 
-      public boolean hasPermission(org.springframework.security.core.Authentication authentication, java.lang.Object targetDomainObject, java.lang.Object permission) {
+      public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication == null || !authentication.isAuthenticated())
           return false;
         else
