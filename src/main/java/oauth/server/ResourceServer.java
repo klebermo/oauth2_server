@@ -47,7 +47,7 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
       .and()
       .authorizeRequests()
         .antMatchers("/user**").authenticated()
-				.antMatchers("/", " /doLogin").permitAll();
+				.antMatchers("/", "/doLogin").permitAll();
 	}
 
   public TokenExtractor tokenExtractor() {
@@ -63,7 +63,7 @@ public class ResourceServer extends ResourceServerConfigurerAdapter {
     				String authHeaderValue = value.substring(OAuth2AccessToken.BEARER_TYPE.length()).trim();
     				request.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE,value.substring(0, OAuth2AccessToken.BEARER_TYPE.length()).trim());
     				int commaIndex = authHeaderValue.indexOf(',');
-            
+
     				if (commaIndex > 0) {
     					authHeaderValue = authHeaderValue.substring(0, commaIndex);
     				}
